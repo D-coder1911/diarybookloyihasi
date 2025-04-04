@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/uploads", express.static("uploads"));
-
 app.use("/api", router);
 
 app.all("/*", (req, res, next) => {
