@@ -1,0 +1,26 @@
+{
+  "name": "diarybook-loyihasi-",
+  "version": "0.1.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js",
+    "start:dev": "nodemon src/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "DiaryBook — bu maqolalar va izohlar orqali foydalanuvchilarni o'zaro bog'lovchi va ularga o'z fikrlarini erkin ifodalash imkoniyatini beruvchi platforma. Bu yerda foydalanuvchilar maqolalar yaratish, tahrirlash, o'qish va izohlar qoldirish orqali o'z fikrlarini baham ko'rishlari mumkin. Ma'lumotlar bazasi sifatida MySQL/PostgreSQL yoki MongoDB ishlatiladi.",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.1",
+    "pg": "^8.14.1"
+  }
+}
