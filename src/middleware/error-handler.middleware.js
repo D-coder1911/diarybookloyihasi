@@ -1,7 +1,6 @@
-export const ErrorHandlerMiddleware = (err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-
-  console.error(`Error: ${message}, StatusCode: ${statusCode}`);
-  res.status(statusCode).json({ error: message });
+  res.status(statusCode).json({ message: err.message });
 };
+
+export default errorHandler;

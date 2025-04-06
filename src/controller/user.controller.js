@@ -1,40 +1,48 @@
-const User = require('../model/user.model');
+import User from '../models/user.model.js';
+    import jwt from 'jsonwebtoken';
+    import bcrypt from 'bcryptjs';
+    import config from '../config/app.config.js';
+    import sendEmail from '../utils/sendEmail.js';
 
-exports.createUser = async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const register = async (req, res, next) => {
+        try {
+            const { username, email, password } = req.body;
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = await User.create({ username, email, password: hashedPassword });
 
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+            await sendEmail(email, 'Diarybook-ga xush kelibsiz!', 'Ro\'yxatdan o\'tganingiz uchun rahmat!');
 
-exports.updateUser = async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+            res.status(201).json({ message: 'Foydalanuvchi muvaffaqiyatli ro\'yxatdan o\'tdi' });
+        } catch (error) {
+            next(error);
+        }
+    };
 
-exports.deleteUser = async (req, res) => {
-  try {
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'User deleted' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const login = async (req, res, next) => {
+        try {
+            const { email, password } = req.body;
+            const user = await User.findOne({ email });
+
+            if (!user || !(await bcrypt.compare(password, user.password))) {
+                return res.status(401).json({ message: 'Noto\'g\'ri login yoki parol' });
+            }
+
+            const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: config.jwtExpiration });
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                maxAge: config.cookieExpiration,
+            });
+
+            res.json({ message: 'Tizimga muvaffaqiyatli kirdingiz' });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    const logout = (req, res) => {
+        res.clearCookie('token');
+        res.json({ message: 'Tizimdan chiqdingiz' });
+    };
+
+    export default { register, login, logout };

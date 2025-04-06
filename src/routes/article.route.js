@@ -1,18 +1,13 @@
-import express from "express";
-import {
-  createArticle,
-  getAllArticles,
-  getArticleById,
-  updateArticle,
-  deleteArticle,
-} from "../controller/article.controller.js";
+import express from 'express';
+    import articleController from '../controllers/article.controller.js';
+    import authMiddleware from '../middleware/auth.js';
 
-const router = express.Router();
+    const router = express.Router();
 
-router.post("/", createArticle);
-router.get("/", getAllArticles);
-router.get("/:id", getArticleById);
-router.put("/:id", updateArticle);
-router.delete("/:id", deleteArticle);
+    router.post('/', authMiddleware, articleController.createArticle);
+    router.get('/', articleController.getArticles);
+    router.get('/:id', articleController.getArticle);
+    router.put('/:id', authMiddleware, articleController.updateArticle);
+    router.delete('/:id', authMiddleware, articleController.deleteArticle);
 
-export default router;
+    export default router;

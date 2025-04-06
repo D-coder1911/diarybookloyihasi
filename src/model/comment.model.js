@@ -1,13 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const commentSchema = new mongoose.Schema({
-  content: { type: String, required: true },
-  articleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Article', required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  parentCommentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
+    const commentSchema = new mongoose.Schema({
+        text: { type: String, required: true },
+        author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article', required: true },
+        createdAt: { type: Date, default: Date.now },
+    });
 
-const Comment = mongoose.model('Comment', commentSchema);
-module.exports = Comment;
+    export default mongoose.model('Comment', commentSchema);

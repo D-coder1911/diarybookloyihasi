@@ -1,11 +1,13 @@
-import express from "express";
-import { createTag, getAllTags, updateTag, deleteTag } from "../controller/tag.controller.js";
+import express from 'express';
+    import tagController from '../controllers/tag.controller.js';
+    import authMiddleware from '../middleware/auth.js';
 
-const router = express.Router();
+    const router = express.Router();
 
-router.post("/", createTag);
-router.get("/", getAllTags);
-router.put("/:id", updateTag);
-router.delete("/:id", deleteTag);
+    router.post('/', authMiddleware, tagController.createTag);
+    router.get('/', tagController.getTags);
+    router.get('/:id', tagController.getTag);
+    router.put('/:id', authMiddleware, tagController.updateTag);
+    router.delete('/:id', authMiddleware, tagController.deleteTag);
 
-export default router;
+    export default router;

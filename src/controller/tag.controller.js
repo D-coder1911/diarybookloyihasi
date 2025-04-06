@@ -1,38 +1,57 @@
-import Tag from "../model/tag.model.js";
+import Tag from '../models/tag.model.js';
 
-export const createTag = async (req, res) => {
-  try {
-    const tag = new Tag(req.body);
-    await tag.save();
-    res.status(201).json(tag);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const createTag = async (req, res, next) => {
+        try {
+            const tag = await Tag.create(req.body);
+            res.status(201).json(tag);
+        } catch (error) {
+            next(error);
+        }
+    };
 
-export const getAllTags = async (req, res) => {
-  try {
-    const tags = await Tag.find();
-    res.status(200).json(tags);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const getTags = async (req, res, next) => {
+        try {
+            const tags = await Tag.find();
+            res.json(tags);
+        } catch (error) {
+            next(error);
+        }
+    };
 
-export const updateTag = async (req, res) => {
-  try {
-    const tag = await Tag.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(tag);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const getTag = async (req, res, next) => {
+        try {
+            const tag = await Tag.findById(req.params.id);
+            if (!tag) {
+                return res.status(404).json({ message: 'Teg topilmadi' });
+            }
+            res.json(tag);
+        } catch (error) {
+            next(error);
+        }
+    };
 
-export const deleteTag = async (req, res) => {
-  try {
-    await Tag.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Tag deleted successfully!" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const updateTag = async (req, res, next) => {
+        try {
+            const tag = await Tag.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            if (!tag) {
+                return res.status(404).json({ message: 'Teg topilmadi' });
+            }
+            res.json(tag);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    const deleteTag = async (req, res, next) => {
+        try {
+            const tag = await Tag.findByIdAndDelete(req.params.id);
+            if (!tag) {
+                return res.status(404).json({ message: 'Teg topilmadi' });
+            }
+            res.json({ message: 'Teg o\'chirildi' });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    export default { createTag, getTags, getTag, updateTag, deleteTag };

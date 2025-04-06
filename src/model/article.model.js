@@ -1,14 +1,12 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const articleSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-  tags: [{ type: String }],
-  authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
+    const articleSchema = new mongoose.Schema({
+        title: { type: String, required: true },
+        content: { type: String, required: true },
+        author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+        tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+        createdAt: { type: Date, default: Date.now },
+    });
 
-const Article = mongoose.model('Article', articleSchema);
-module.exports = Article;
+    export default mongoose.model('Article', articleSchema);

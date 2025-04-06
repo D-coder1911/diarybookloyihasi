@@ -1,23 +1,20 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+    import config from '../config/app.config.js';
 
-export const authenticateToken = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ message: "Access Denied!" });
+    const authMiddleware = (req, res, next) => {
+        const token = req.cookies.token;
 
-  try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
-    next();
-  } catch (error) {
-    res.status(403).json({ message: "Invalid Token!" });
-  }
-};
+        if (!token) {
+            return res.status(401).json({ message: 'Avtorizatsiya tokeni topilmadi' });
+        }
 
-export const authorizeRoles = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Access Forbidden: Insufficient permissions!" });
-    }
-    next();
-  };
-};
+        try {
+            const decoded = jwt.verify(token, config.jwtSecret);
+            req.userId = decoded.id;
+            next();
+        } catch (error) {
+            res.status(401).json({ message: 'Noto\'g\'ri token' });
+        }
+    };
+
+    export default authMiddleware;

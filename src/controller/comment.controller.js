@@ -1,38 +1,57 @@
-import Comment from "../model/comment.model.js";
+import Comment from '../models/comment.model.js';
 
-export const createComment = async (req, res) => {
-  try {
-    const comment = new Comment(req.body);
-    await comment.save();
-    res.status(201).json(comment);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const createComment = async (req, res, next) => {
+        try {
+            const comment = await Comment.create(req.body);
+            res.status(201).json(comment);
+        } catch (error) {
+            next(error);
+        }
+    };
 
-export const getCommentsByArticle = async (req, res) => {
-  try {
-    const comments = await Comment.find({ articleId: req.params.articleId }).populate("userId");
-    res.status(200).json(comments);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const getComments = async (req, res, next) => {
+        try {
+            const comments = await Comment.find();
+            res.json(comments);
+        } catch (error) {
+            next(error);
+        }
+    };
 
-export const updateComment = async (req, res) => {
-  try {
-    const comment = await Comment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(comment);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const getComment = async (req, res, next) => {
+        try {
+            const comment = await Comment.findById(req.params.id);
+            if (!comment) {
+                return res.status(404).json({ message: 'Izoh topilmadi' });
+            }
+            res.json(comment);
+        } catch (error) {
+            next(error);
+        }
+    };
 
-export const deleteComment = async (req, res) => {
-  try {
-    await Comment.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Comment deleted successfully!" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const updateComment = async (req, res, next) => {
+        try {
+            const comment = await Comment.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            if (!comment) {
+                return res.status(404).json({ message: 'Izoh topilmadi' });
+            }
+            res.json(comment);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    const deleteComment = async (req, res, next) => {
+        try {
+            const comment = await Comment.findByIdAndDelete(req.params.id);
+            if (!comment) {
+                return res.status(404).json({ message: 'Izoh topilmadi' });
+            }
+            res.json({ message: 'Izoh o\'chirildi' });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    export default { createComment, getComments, getComment, updateComment, deleteComment };
