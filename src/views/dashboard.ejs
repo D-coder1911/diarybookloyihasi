@@ -1,0 +1,17 @@
+<%- include('layout') %>
+
+<div class="container mt-4">
+    <h2>Welcome, <%= user.name %></h2>
+    <p>Here you can write your thoughts and articles.</p>
+    <a href="/create-article" class="btn btn-primary">Create Article</a>
+
+    <h3>Your Articles</h3>
+    <!-- Articles list will go here -->
+    <ul class="list-group">
+        <% articles.forEach(function(article) { %>
+            <li class="list-group-item">
+                <a href="/article/<%= article._id %>"><%= article.title %></a>
+            </li>
+        <% }) %>
+    </ul>
+</div>

@@ -1,5 +1,5 @@
 import express from 'express';
-    import categoryController from '../controllers/category.controller.js';
+    import categoryController from '../controller/category.controller.js';
     import authMiddleware from '../middleware/auth.js';
 
     const router = express.Router();

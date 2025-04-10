@@ -1,20 +1,20 @@
-import jwt from 'jsonwebtoken';
-    import config from '../config/app.config.js';
+const jwt = require('jsonwebtoken');
+const { User } = require('../model/user.model');
 
-    const authMiddleware = (req, res, next) => {
-        const token = req.cookies.token;
+const auth = async (req, res, next) => {
+    try {
+        const token = req.cookies.token; 
+        if (!token) return res.status(401).send('Access Denied');
 
-        if (!token) {
-            return res.status(401).json({ message: 'Avtorizatsiya tokeni topilmadi' });
-        }
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(verified.id);
+        if (!user) return res.status(404).send('User not found');
+        
+        req.user = user;
+        next();
+    } catch (err) {
+        res.status(400).send('Invalid Token');
+    }
+};
 
-        try {
-            const decoded = jwt.verify(token, config.jwtSecret);
-            req.userId = decoded.id;
-            next();
-        } catch (error) {
-            res.status(401).json({ message: 'Noto\'g\'ri token' });
-        }
-    };
-
-    export default authMiddleware;
+module.exports = auth;

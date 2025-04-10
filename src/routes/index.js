@@ -1,10 +1,10 @@
-import express from "express";
+import { Router } from "express";
 import userRoutes from "./user.route.js";
 import articleRoutes from "./article.route.js";
 import categoryRoutes from "./category.route.js";
 import commentRoutes from "./comment.route.js";
 
-const router = express.Router();
+const router = Router();
 
 router.use("/users", userRoutes);
 router.use("/articles", articleRoutes);

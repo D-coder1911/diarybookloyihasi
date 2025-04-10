@@ -1,4 +1,4 @@
-import Tag from '../models/tag.model.js';
+import Tag from '../model/tag.model.js';
 
     const createTag = async (req, res, next) => {
         try {
