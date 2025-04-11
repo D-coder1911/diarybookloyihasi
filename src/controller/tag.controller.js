@@ -1,57 +1,48 @@
 import Tag from '../model/tag.model.js';
+import { BaseException } from '../exception/base.exception.js';
 
-    const createTag = async (req, res, next) => {
-        try {
-            const tag = await Tag.create(req.body);
-            res.status(201).json(tag);
-        } catch (error) {
-            next(error);
-        }
-    };
+export const getTags = async (req, res, next) => {
+  try {
+    const tags = await Tag.find();
+    res.status(200).json({
+      success: true,
+      message: 'Teglar roʻyxati',
+      count: tags.length,
+      data: tags,
+    });
+  } catch (error) {
+    next(new BaseException(error.message, 500));
+  }
+};
 
-    const getTags = async (req, res, next) => {
-        try {
-            const tags = await Tag.find();
-            res.json(tags);
-        } catch (error) {
-            next(error);
-        }
-    };
+export const createTag = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      throw new BaseException('Teg nomi talab qilinadi', 400);
+    }
+    const newTag = await Tag.create({ name });
+    res.status(201).json({
+      success: true,
+      message: 'Teg muvaffaqiyatli yaratildi',
+      data: newTag,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    const getTag = async (req, res, next) => {
-        try {
-            const tag = await Tag.findById(req.params.id);
-            if (!tag) {
-                return res.status(404).json({ message: 'Teg topilmadi' });
-            }
-            res.json(tag);
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    const updateTag = async (req, res, next) => {
-        try {
-            const tag = await Tag.findByIdAndUpdate(req.params.id, req.body, { new: true });
-            if (!tag) {
-                return res.status(404).json({ message: 'Teg topilmadi' });
-            }
-            res.json(tag);
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    const deleteTag = async (req, res, next) => {
-        try {
-            const tag = await Tag.findByIdAndDelete(req.params.id);
-            if (!tag) {
-                return res.status(404).json({ message: 'Teg topilmadi' });
-            }
-            res.json({ message: 'Teg o\'chirildi' });
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    export default { createTag, getTags, getTag, updateTag, deleteTag };
+export const deleteTag = async (req, res, next) => {
+  try {
+    const tag = await Tag.findByIdAndDelete(req.params.id);
+    if (!tag) {
+      throw new BaseException(`Teg ID: ${req.params.id} topilmadi`, 404);
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Teg muvaffaqiyatli oʻchirildi',
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "start": "node src/main.js",
-    "start:dev": "nodemon src/main.js"
+    "start:dev": "NODE_ENV=development nodemon src/main.js",
+    "start:prod": "NODE_ENV=production node src/main.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Zoyirov Diyorbek",
   "license": "ISC",
   "description": "DiaryBook — bu maqolalar va izohlar orqali foydalanuvchilarni o'zaro bog'lovchi va ularga o'z fikrlarini erkin ifodalash imkoniyatini beruvchi platforma. Bu yerda foydalanuvchilar maqolalar yaratish, tahrirlash, o'qish va izohlar qoldirish orqali o'z fikrlarini baham ko'rishlari mumkin. Ma'lumotlar bazasi sifatida MySQL/PostgreSQL yoki MongoDB ishlatiladi.",
   "devDependencies": {
@@ -19,12 +20,16 @@
     "bootstrap": "^5.3.5",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
     "mongoose": "^8.13.1",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2",
     "nodemailer": "^6.10.0",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "winston": "^3.17.0"
   }
 }

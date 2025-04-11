@@ -1,163 +1,66 @@
-import { compare, hash } from "bcrypt";
-import jwt from "jsonwebtoken";
-import userModel from "../model/user.model.js";
-import { BaseException } from "../exception/base.exception.js";
-import {
-  ACCESS_TOKEN_EXPIRE_TIME,
-  ACCESS_TOKEN_SECRET,
-  REFRESH_TOKEN_EXPIRE_TIME,
-  REFRESH_TOKEN_SECRET,
-} from "../config/jwt.config.js";
-import { sendMail } from "../utils/mail.utils.js";
+import User from '../model/user.model.js';
+import { BaseException } from '../exception/base.exception.js';
 
-const register = async (req, res, next) => {
+export const getUsers = async (req, res, next) => {
   try {
-    const { name, email, phoneNumber, password } = req.body;
-
-    const foundedUser = await userModel.findOne({
-      $or: [{ email }, { phoneNumber }],
-    });
-
-    if (foundedUser) {
-      throw new BaseException(
-        "User already exists, try another email or phone number",
-        409
-      );
-    }
-
-    const passwordHash = await hash(password, 10);
-
-    const user = await userModel.create({
-      email,
-      phoneNumber,
-      name,
-      password: passwordHash,
-    });
-
-    await sendMail({
-      to: email,
-      subject: "Welcome",
-      text: `Salom ${name}! Bizning Fast Food restoranimizda muvaffaqiyatli ro'yhatdan o'tdingiz`,
-    });
-
-    res.status(201).send({
-      message: "success",
-      data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await userModel.findOne({ email });
-
-    if (!user) {
-      throw new BaseException("User not found", 404);
-    }
-
-    const isMatch = await compare(password, user.password);
-
-    if (!isMatch) {
-      throw new BaseException("Invalid password", 401);
-    }
-
-    const accessToken = jwt.sign(
-      { id: user.id, role: user.role },
-      ACCESS_TOKEN_SECRET,
-      {
-        expiresIn: ACCESS_TOKEN_EXPIRE_TIME,
-        algorithm: "HS256",
-      }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: user.id, role: user.role },
-      REFRESH_TOKEN_SECRET,
-      {
-        expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
-        algorithm: "HS256",
-      }
-    );
-
-    res.cookie("accessToken", accessToken, {
-      maxAge: 68 * 1000, // 68 seconds for access token expiration
-      httpOnly: true,
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      maxAge: REFRESH_TOKEN_EXPIRE_TIME * 1000, // Refresh token expiration
-      httpOnly: true,
-    });
-
-    res.send({
-      message: "success",
-      tokens: {
-        accessToken,
-        refreshToken,
-      },
-      data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await userModel.find().populate({
-      path: "orders",
-      populate: {
-        path: "orderItems",
-        populate: "food",
-      },
-    });
-
-    res.send({
-      message: "success",
+    const { page = 1, limit = 10 } = req.query;
+    const users = await User.find()
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit, 10));
+    res.status(200).json({
+      success: true,
+      message: 'Foydalanuvchilar roʻyxati',
       count: users.length,
       data: users,
     });
   } catch (error) {
+    next(new BaseException(error.message, 500));
+  }
+};
+
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      throw new BaseException(`Foydalanuvchi ID: ${req.params.id} topilmadi`, 404);
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Foydalanuvchi topildi',
+      data: user,
+    });
+  } catch (error) {
     next(error);
   }
 };
 
-const refresh = async (req, res, next) => {
+export const updateUser = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
-
-    const data = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
-
-    const accessToken = jwt.sign(data, ACCESS_TOKEN_SECRET, {
-      expiresIn: ACCESS_TOKEN_EXPIRE_TIME,
-      algorithm: "HS256",
-    });
-
-    const newRefreshToken = jwt.sign(data, REFRESH_TOKEN_SECRET, {
-      expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
-      algorithm: "HS256",
-    });
-
-    res.send({
-      message: "success",
-      tokens: {
-        accessToken,
-        refreshToken: newRefreshToken,
-      },
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!user) {
+      throw new BaseException(`Foydalanuvchi ID: ${req.params.id} topilmadi`, 404);
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Foydalanuvchi muvaffaqiyatli yangilandi',
+      data: user,
     });
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      next(new BaseException("Refresh token expired", 401));
-    } else if (error instanceof jwt.JsonWebTokenError) {
-      next(new BaseException("Invalid refresh token", 400));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
-export default { register, getAllUsers, login, refresh };
+export const deleteUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      throw new BaseException(`Foydalanuvchi ID: ${req.params.id} topilmadi`, 404);
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Foydalanuvchi muvaffaqiyatli oʻchirildi',
+    });
+  } catch (error) {
+    next(error);
+  }
+};

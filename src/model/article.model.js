@@ -1,12 +1,35 @@
 import mongoose from 'mongoose';
 
-    const articleSchema = new mongoose.Schema({
-        title: { type: String, required: true },
-        content: { type: String, required: true },
-        author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-        tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
-        createdAt: { type: Date, default: Date.now },
-    });
+const articleSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, 'Maqola nomi talab qilinadi'],
+      trim: true,
+    },
+    content: {
+      type: String,
+      required: [true, 'Maqola matni talab qilinadi'],
+    },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tag',
+      },
+    ],
+    votes: {
+      type: Number,
+      default: 0,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-    export default mongoose.model('Article', articleSchema);
+export default mongoose.model('Article', articleSchema);

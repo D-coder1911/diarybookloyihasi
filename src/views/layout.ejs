@@ -1,58 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiaryBook</title>
+<%- include('layout') %>
 
-    <!-- Bootstrap CSS (CDN) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <link href="/css/style.css" rel="stylesheet">
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">DiaryBook</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/articles">Articles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/categories">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/tags">Tags</a>
-                    </li>
-                    <% if (user) { %>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/profile">Profile</a>
-                        </li>
-                    <% } else { %>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">Login</a>
-                        </li>
-                    <% } %>
-                </ul>
-            </div>
+<div class="jumbotron text-center">
+  <h1 class="display-4">Xush kelibsiz!</h1>
+  <p class="lead">Bizning platformamizda maqola yozing, baholang va fikr almashing!</p>
+  <a href="/login" class="btn btn-primary btn-lg">Kirish</a>
+  <a href="/register" class="btn btn-success btn-lg">Ro'yxatdan o'tish</a>
+</div>
+<div class="container mt-5">
+  <h1 class="text-center">Dashboard</h1>
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Maqolalar</h5>
+          <p class="card-text">Yangi maqolalar yaratish va boshqarish</p>
+          <a href="/articles" class="btn btn-info btn-block">Batafsil</a>
         </div>
-    </nav>
-
-    <!-- Content -->
-    <div class="container">
-        <%- body %>  <!-- Page content will be injected here -->
+      </div>
     </div>
-
-    <!-- Bootstrap JS (CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-</body>
-</html>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Foydalanuvchilar</h5>
+          <p class="card-text">Foydalanuvchilarni ko'rish va boshqarish</p>
+          <a href="/users" class="btn btn-info btn-block">Batafsil</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Teglar</h5>
+          <p class="card-text">Teglarni boshqarish</p>
+          <a href="/tags" class="btn btn-info btn-block">Batafsil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

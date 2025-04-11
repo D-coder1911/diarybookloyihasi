@@ -1,20 +1,26 @@
-const jwt = require('jsonwebtoken');
-const { User } = require('../model/user.model');
+import jwt from "jsonwebtoken";
 
-const auth = async (req, res, next) => {
-    try {
-        const token = req.cookies.token; 
-        if (!token) return res.status(401).send('Access Denied');
+const auth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = req.cookies?.token || (authHeader && authHeader.startsWith("Bearer") ? authHeader.split(" ")[1] : null);
 
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(verified.id);
-        if (!user) return res.status(404).send('User not found');
-        
-        req.user = user;
-        next();
-    } catch (err) {
-        res.status(400).send('Invalid Token');
+  if (!token) {
+    return res.status(401).json({ success: false, message: "Token topilmadi, tizimga kiring." });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ success: false, message: "Token muddati tugagan!" });
     }
+    if (err.name === "JsonWebTokenError") {
+      return res.status(401).json({ success: false, message: "Yaroqsiz token!" });
+    }
+    return res.status(500).json({ success: false, message: "Tokenni tasdiqlashda xatolik!" });
+  }
 };
 
-module.exports = auth;
+export default auth;
